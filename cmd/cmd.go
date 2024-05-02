@@ -3,7 +3,9 @@ package cmd
 import (
 	"github.com/phuonganhniie/botbot-leetcode/config"
 	"github.com/phuonganhniie/botbot-leetcode/internal/api"
+	"github.com/phuonganhniie/botbot-leetcode/internal/format"
 	"github.com/phuonganhniie/botbot-leetcode/internal/logger"
+	"github.com/phuonganhniie/botbot-leetcode/internal/telegram"
 )
 
 func init() {
@@ -23,5 +25,15 @@ func Start() {
 		logger.Errorf("Fetch daily challenge error: %v", err)
 		return
 	}
-	logger.Infof("Today's LeetCode Challenge: %s * Difficulty: %s * Link: %s", challenge.Name, challenge.Difficulty, challenge.QuestionLink)
+
+	var formatter format.MessageFormatter
+	formatter = &format.TelegramFormatter{}
+
+	message := formatter.FormatMessage(&challenge)
+	err = telegram.SendChallenge(config.GetConfig().TelegramBotToken, config.GetConfig().TelegramChatID, message)
+	if err != nil {
+		logger.Errorf("Failed to send Telegram message: %v", err)
+		return
+	}
+	logger.Info("Message sent successfully to Telegram")
 }

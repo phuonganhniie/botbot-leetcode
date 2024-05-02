@@ -6,7 +6,8 @@ import (
 
 type Config struct {
 	LeetCodeDailyURL string `mapstructure:"LEETCODE_DAILY_URL"`
-	SlackWebhookURL  string `mapstructure:"SLACK_WEBHOOK_URL"`
+	TelegramBotToken string `mapstructure:"TELEGRAM_BOT_TOKEN"`
+	TelegramChatID   string `mapstructure:"TELEGRAM_CHAT_ID"`
 }
 
 var config *Config
