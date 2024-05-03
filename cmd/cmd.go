@@ -10,16 +10,10 @@ import (
 
 func init() {
 	logger.InitLogger()
+	config.LoadConfig("config")
 }
 
 func Start() {
-	_, err := config.LoadConfig("config")
-	if err != nil {
-		logger.Errorf("Load application config failed: %v", err)
-		return
-	}
-	logger.Info("Load application config successfully")
-
 	challenge, err := api.FetchDailyChallenge(config.GetConfig().LeetCodeDailyURL)
 	if err != nil {
 		logger.Errorf("Fetch daily challenge error: %v", err)
