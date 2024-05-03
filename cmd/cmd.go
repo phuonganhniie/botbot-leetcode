@@ -10,7 +10,7 @@ import (
 
 func init() {
 	logger.InitLogger()
-	config.LoadConfig("config")
+	config.LoadConfig()
 }
 
 func Start() {

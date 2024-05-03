@@ -12,10 +12,11 @@ type Config struct {
 
 var config *Config
 
-func LoadConfig(path string) (*Config, error) {
-	viper.AddConfigPath(path)
-	viper.SetConfigName("config")
+func LoadConfig() (*Config, error) {
 	viper.SetConfigType("env")
+
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
 
 	viper.AutomaticEnv()
 
