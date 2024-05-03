@@ -13,12 +13,15 @@ type Config struct {
 var config *Config
 
 func LoadConfig() (*Config, error) {
-	viper.SetConfigType("env")
+	viper.AutomaticEnv()
+
+	viper.BindEnv("LEETCODE_DAILY_URL")
+	viper.BindEnv("TELEGRAM_BOT_TOKEN")
+	viper.BindEnv("TELEGRAM_CHAT_ID")
 
 	viper.SetConfigName("config")
+	viper.SetConfigType("env")
 	viper.AddConfigPath(".")
-
-	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -31,11 +34,4 @@ func LoadConfig() (*Config, error) {
 	}
 
 	return config, nil
-}
-
-func GetConfig() *Config {
-	if config == nil {
-		panic("load config first")
-	}
-	return config
 }

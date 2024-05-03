@@ -10,11 +10,16 @@ import (
 
 func init() {
 	logger.InitLogger()
-	config.LoadConfig()
 }
 
 func Start() {
-	challenge, err := api.FetchDailyChallenge(config.GetConfig().LeetCodeDailyURL)
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		logger.Errorf("Failed to load configuration: %v", err)
+		return
+	}
+
+	challenge, err := api.FetchDailyChallenge(cfg.LeetCodeDailyURL)
 	if err != nil {
 		logger.Errorf("Fetch daily challenge error: %v", err)
 		return
@@ -24,7 +29,7 @@ func Start() {
 	formatter = &format.TelegramFormatter{}
 
 	message := formatter.FormatMessage(&challenge)
-	err = telegram.SendChallenge(config.GetConfig().TelegramBotToken, config.GetConfig().TelegramChatID, message)
+	err = telegram.SendChallenge(cfg.TelegramBotToken, cfg.TelegramChatID, message)
 	if err != nil {
 		logger.Errorf("Failed to send Telegram message: %v", err)
 		return
