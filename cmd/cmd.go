@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"strconv"
+
 	"github.com/phuonganhniie/botbot-leetcode/config"
 	"github.com/phuonganhniie/botbot-leetcode/internal/api"
 	"github.com/phuonganhniie/botbot-leetcode/internal/format"
@@ -25,14 +27,24 @@ func Start() {
 		return
 	}
 
+	chatIDs, err := telegram.GetChatIds(cfg.TelegramBotToken)
+	if err != nil {
+		logger.Errorf("Failed to get Telegram list ChatIDs: %v", err)
+		return
+	}
+
 	var formatter format.MessageFormatter
 	formatter = &format.TelegramFormatter{}
 
 	message := formatter.FormatMessage(&challenge)
-	err = telegram.SendChallenge(cfg.TelegramBotToken, cfg.TelegramChatID, message)
-	if err != nil {
-		logger.Errorf("Failed to send Telegram message: %v", err)
-		return
+
+	for i := 0; i < len(chatIDs); i++ {
+		chatIdStr := strconv.Itoa(int(chatIDs[i]))
+		err = telegram.SendChallenge(cfg.TelegramBotToken, chatIdStr, message)
+		if err != nil {
+			logger.Errorf("Failed to send Telegram message: %v", err)
+			return
+		}
 	}
 	logger.Info("Message sent successfully to Telegram")
 }

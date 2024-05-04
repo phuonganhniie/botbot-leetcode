@@ -10,7 +10,6 @@ import (
 type Config struct {
 	LeetCodeDailyURL string `mapstructure:"LEETCODE_DAILY_URL"`
 	TelegramBotToken string `mapstructure:"TELEGRAM_BOT_TOKEN"`
-	TelegramChatID   string `mapstructure:"TELEGRAM_CHAT_ID"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -32,7 +31,6 @@ func LoadConfig() (*Config, error) {
 
 	viper.BindEnv("LEETCODE_DAILY_URL")
 	viper.BindEnv("TELEGRAM_BOT_TOKEN")
-	viper.BindEnv("TELEGRAM_CHAT_ID")
 
 	var config Config
 	err := viper.Unmarshal(&config)
