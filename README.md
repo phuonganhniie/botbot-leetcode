@@ -34,14 +34,9 @@ BotBot LeetCode Daily Challenge Notifier is a simple automated bot designed to f
     LEETCODE_DAILY_URL: "https://example.com/api/leetcode_challenge"
 
     TELEGRAM_BOT_TOKEN: "12xxx:ABC-DExxxxhIkl-zyx57W2xxxxx3ew11"
+    ```
 
-    TELEGRAM_CHAT_ID: "123456789"
-    ```
-    
-3. **Build the Project**
-    ```bash
-    go build -o leetcode-cron ./cmd/cmd.go
-    ```
+ * About the LeetCode URL: I used the [alfa-leetcode-api](https://github.com/alfaArghya/alfa-leetcode-api) for getting the well-structured LeetCode's data. Special thanks to `alfaarghya` for contributing helpful APIs.
 
 ### **Usage**
 Run the application to start fetching and sending the daily LeetCode challenge:
@@ -50,15 +45,7 @@ Run the application to start fetching and sending the daily LeetCode challenge:
 go run main.go
 ```
 
-The application is set up with a cron job that triggers at 10:00 AM daily to perform these tasks automatically.
-
-## **Development**
-
-To contribute to the project or modify it, follow the typical Go project workflow:
-
-- Make changes to the Go files.
-- Test the changes locally.
-- Rebuild the binary with **`go build`**.
+The application is set up with a cron job that triggers at 10:00 AM daily to perform these tasks automatically by `AWS Lambda` & `AWS EventBridge`.
 
 
 ## **License**
