@@ -38,8 +38,8 @@ func Start() {
 
 	message := formatter.FormatMessage(&challenge)
 
-	for i := 0; i < len(chatIDs); i++ {
-		chatIdStr := strconv.Itoa(int(chatIDs[i]))
+	for _, chatId := range chatIDs {
+		chatIdStr := strconv.Itoa(int(chatId))
 		err = telegram.SendChallenge(cfg.TelegramBotToken, chatIdStr, message)
 		if err != nil {
 			logger.Errorf("Failed to send Telegram message: %v", err)
