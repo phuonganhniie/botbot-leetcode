@@ -86,6 +86,7 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 		if err != nil {
 			return fmt.Errorf("failed to create file: %v", err)
 		}
+		file.Chmod(0777)
 		defer file.Close()
 
 		if err := json.NewEncoder(file).Encode(uniqueChatIds); err != nil {
