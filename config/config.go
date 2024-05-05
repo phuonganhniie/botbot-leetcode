@@ -32,6 +32,7 @@ func LoadConfig() (*Config, error) {
 
 	viper.BindEnv("LEETCODE_DAILY_URL")
 	viper.BindEnv("TELEGRAM_BOT_TOKEN")
+	viper.BindEnv("TELEGRAM_CHAT_IDS_FILE_PATH")
 
 	var config Config
 	err := viper.Unmarshal(&config)
