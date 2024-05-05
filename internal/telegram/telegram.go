@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/phuonganhniie/botbot-leetcode/internal/logger"
 	"github.com/phuonganhniie/botbot-leetcode/model"
@@ -24,13 +25,13 @@ func uniqueChatIds(chatIds []int64) []int64 {
 	return uniqueIds
 }
 
-func GetChatIds(token string) (chatIds []int64, err error) {
+func GetAndStoreChatIds(token string, filePath string) (err error) {
 	url := fmt.Sprintf("https://api.telegram.org/bot%s/getUpdates", token)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		logger.Errorf("Failed to create request for Telegram API: %v", err)
-		return nil, err
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -39,27 +40,79 @@ func GetChatIds(token string) (chatIds []int64, err error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		logger.Errorf("Failed to send message via Telegram API: %v", err)
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Telegram API returned non-OK status: %v", err)
+		return fmt.Errorf("Telegram API returned non-OK status: %v", err)
 	}
 
 	body, _ := io.ReadAll(resp.Body)
 
 	var teleResp model.TelegramResponse
 	if err = json.Unmarshal(body, &teleResp); err != nil {
-		return nil, err
+		return err
 	}
 
+	newChatIds := []int64{}
 	for _, rs := range teleResp.Result {
-		chatIds = append(chatIds, rs.Message.Chat.ID)
+		newChatIds = append(newChatIds, rs.Message.Chat.ID)
 	}
 
-	uniqueChatIds := uniqueChatIds(chatIds)
-	return uniqueChatIds, nil
+	// Load existing chat IDs from the JSON file
+	var existChatIds []int64
+	if filePath != "" {
+		file, err := os.Open(filePath)
+		if err == nil {
+			defer file.Close()
+			_ = json.NewDecoder(file).Decode(&existChatIds)
+		}
+	}
+
+	// If the file path is empty, use a default name
+	if filePath == "" {
+		logger.Infof("Warning: chatIDsFile is empty. Using default path: default_chat_ids.json")
+		filePath = "default_chat_ids.json"
+	}
+
+	// Merge new chat IDs with existing ones, ensuring uniqueness
+	allChatIds := append(existChatIds, newChatIds...)
+	uniqueChatIds := uniqueChatIds(allChatIds)
+
+	// Write unique chat IDs to the JSON file
+	if len(newChatIds) > 0 {
+		file, err := os.Create(filePath)
+		if err != nil {
+			return fmt.Errorf("failed to create file: %v", err)
+		}
+		defer file.Close()
+
+		if err := json.NewEncoder(file).Encode(uniqueChatIds); err != nil {
+			return fmt.Errorf("failed to write to file: %v", err)
+		}
+	}
+	return nil
+}
+
+func LoadChatIdsFromFile(filePath string) ([]int64, error) {
+	if filePath == "" {
+		logger.Infof("Warning: chatIDsFile is empty. Using default path: default_chat_ids.json")
+		filePath = "default_chat_ids.json"
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	chatIds := []int64{}
+	if err := json.NewDecoder(file).Decode(&chatIds); err != nil {
+		return nil, fmt.Errorf("failed to decode chat IDs: %v", err)
+	}
+
+	return chatIds, nil
 }
 
 func SendChallenge(token string, chatID string, messageText string) error {

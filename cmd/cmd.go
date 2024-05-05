@@ -21,24 +21,35 @@ func Start() {
 		return
 	}
 
+	// Get the LeetCode daily challenge
 	challenge, err := api.FetchDailyChallenge(cfg.LeetCodeDailyURL)
 	if err != nil {
 		logger.Errorf("Fetch daily challenge error: %v", err)
 		return
 	}
 
-	chatIDs, err := telegram.GetChatIds(cfg.TelegramBotToken)
+	// Retrieve and store chat IDs
+	chatIDsFile := cfg.TelegramChatIDsFilePath
+	err = telegram.GetAndStoreChatIds(cfg.TelegramBotToken, chatIDsFile)
 	if err != nil {
 		logger.Errorf("Failed to get Telegram list ChatIDs: %v", err)
 		return
 	}
 
+	// Load chat IDs from file
+	chatIds, err := telegram.LoadChatIdsFromFile(chatIDsFile)
+	if err != nil {
+		logger.Errorf("Failed to get Telegram list ChatIDs: %v", err)
+		return
+	}
+
+	// Send the message to all chat IDs
 	var formatter format.MessageFormatter
 	formatter = &format.TelegramFormatter{}
 
 	message := formatter.FormatMessage(&challenge)
 
-	for _, chatId := range chatIDs {
+	for _, chatId := range chatIds {
 		chatIdStr := strconv.Itoa(int(chatId))
 		err = telegram.SendChallenge(cfg.TelegramBotToken, chatIdStr, message)
 		if err != nil {

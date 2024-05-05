@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	LeetCodeDailyURL string `mapstructure:"LEETCODE_DAILY_URL"`
-	TelegramBotToken string `mapstructure:"TELEGRAM_BOT_TOKEN"`
+	LeetCodeDailyURL        string `mapstructure:"LEETCODE_DAILY_URL"`
+	TelegramBotToken        string `mapstructure:"TELEGRAM_BOT_TOKEN"`
+	TelegramChatIDsFilePath string `mapstructure:"TELEGRAM_CHAT_IDS_FILE_PATH"`
 }
 
 func LoadConfig() (*Config, error) {
