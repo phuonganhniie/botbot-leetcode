@@ -37,7 +37,7 @@ func Start() {
 	}
 
 	// Load chat IDs from file
-	chatIds, err := telegram.LoadChatIdsFromFile(chatIDsFile)
+	chatIds, err := telegram.LoadChatIds(chatIDsFile)
 	if err != nil {
 		logger.Errorf("Failed to get Telegram list ChatIDs: %v", err)
 		return

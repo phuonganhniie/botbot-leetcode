@@ -95,7 +95,7 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 	return nil
 }
 
-func LoadChatIdsFromFile(filePath string) ([]int64, error) {
+func LoadChatIds(filePath string) ([]int64, error) {
 	if filePath == "" {
 		logger.Infof("Warning: chatIDsFile is empty. Using default path: default_chat_ids.json")
 		filePath = "default_chat_ids.json"
