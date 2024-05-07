@@ -39,7 +39,7 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Errorf("Failed to send message via Telegram API: %v", err)
+		logger.Errorf("Failed to get updates via Telegram API: %v", err)
 		return err
 	}
 	defer resp.Body.Close()
@@ -64,10 +64,15 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 	var existChatIds []int64
 	if filePath != "" {
 		file, err := os.Open(filePath)
+		if os.IsNotExist(err) {
+			os.Create(filePath)
+			file.Chmod(0777)
+		}
 		if err == nil {
 			defer file.Close()
 			_ = json.NewDecoder(file).Decode(&existChatIds)
 		}
+		defer file.Close()
 	}
 
 	// If the file path is empty, use a default name
