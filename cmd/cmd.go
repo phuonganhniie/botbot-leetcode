@@ -34,6 +34,7 @@ func Start() {
 	if err != nil {
 		logger.Errorf("Failed to fetch Telegram list ChatIDs: %v", err)
 	}
+	logger.Info("Get and store chatIDs to file successfully")
 
 	// Load chat IDs from file
 	chatIds, err := telegram.LoadChatIds(chatIDsFile)
@@ -41,6 +42,7 @@ func Start() {
 		logger.Errorf("Failed to get Telegram list ChatIDs: %v", err)
 		return
 	}
+	logger.Info("Load chatIDs successfully")
 
 	// Send the message to all chat IDs
 	var formatter format.MessageFormatter
