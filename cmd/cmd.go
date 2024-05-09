@@ -38,11 +38,11 @@ func Start() {
 
 	// Load chat IDs from file
 	chatIds, err := telegram.LoadChatIds(chatIDsFile)
+	logger.Infof("Load chatIDs: %v", chatIds)
 	if err != nil {
 		logger.Errorf("Failed to get Telegram list ChatIDs: %v", err)
 		return
 	}
-	logger.Info("Load chatIDs successfully")
 
 	// Send the message to all chat IDs
 	var formatter format.MessageFormatter

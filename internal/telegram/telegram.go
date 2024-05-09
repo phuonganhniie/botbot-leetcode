@@ -98,10 +98,13 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 			return fmt.Errorf("failed to write to file: %v", err)
 		}
 	}
+	logger.Infof("Final file path is: %v", filePath)
 	return nil
 }
 
 func LoadChatIds(filePath string) ([]int64, error) {
+	logger.Infof("Load ChatIDs from file path: %v", filePath)
+
 	if filePath == "" {
 		logger.Infof("Warning: chatIDsFile is empty. Using default path: default_chat_ids.json")
 		filePath = "default_chat_ids.json"
