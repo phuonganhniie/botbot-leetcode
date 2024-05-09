@@ -55,3 +55,11 @@ func Error(message string) {
 func Errorf(template string, args ...interface{}) {
 	log.Errorf(template, args...)
 }
+
+func Warn(message string) {
+	log.Warn(message)
+}
+
+func Warnf(template string, args ...interface{}) {
+	log.Warnf(template, args...)
+}

@@ -30,7 +30,7 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		logger.Errorf("Failed to create request for Telegram API: %v", err)
+		logger.Errorf("[GetAndStoreChatIds] failed to create request for Telegram API: %v", err)
 		return err
 	}
 
@@ -39,13 +39,13 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Errorf("Failed to get updates via Telegram API: %v", err)
+		logger.Errorf("[GetAndStoreChatIds] failed to get updates via Telegram API: %v", err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Telegram API returned non-OK status: %v", err)
+		return fmt.Errorf("[GetAndStoreChatIds] telegram API returned non-OK status: %v", err)
 	}
 
 	body, _ := io.ReadAll(resp.Body)
@@ -65,7 +65,10 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 	if filePath != "" {
 		file, err := os.Open(filePath)
 		if os.IsNotExist(err) {
-			os.Create(filePath)
+			_, err := os.Create(filePath)
+			if err != nil {
+				return fmt.Errorf("[GetAndStoreChatIds] failed to create file: %v", err)
+			}
 			file.Chmod(0777)
 		}
 		if err == nil {
@@ -77,7 +80,7 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 
 	// If the file path is empty, use a default name
 	if filePath == "" {
-		logger.Infof("Warning: chatIDsFile is empty. Using default path: default_chat_ids.json")
+		logger.Warn("ChatIDsFile is empty. Using default path: default_chat_ids.json")
 		filePath = "default_chat_ids.json"
 	}
 
@@ -89,44 +92,44 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 	if len(newChatIds) > 0 {
 		file, err := os.Create(filePath)
 		if err != nil {
-			return fmt.Errorf("failed to create file: %v", err)
+			return fmt.Errorf("[GetAndStoreChatIds] failed to create file: %v", err)
 		}
 		file.Chmod(0777)
 		defer file.Close()
 
 		if err := json.NewEncoder(file).Encode(uniqueChatIds); err != nil {
-			return fmt.Errorf("failed to write to file: %v", err)
+			return fmt.Errorf("[GetAndStoreChatIds] failed to write to file: %v", err)
 		}
 	}
-	logger.Infof("Final file path is: %v", filePath)
+	logger.Infof("[GetAndStoreChatIds] Final file path is: %v", filePath)
 	return nil
 }
 
 func LoadChatIds(filePath string) ([]int64, error) {
-	logger.Infof("Load ChatIDs from file path: %v", filePath)
+	logger.Infof("[LoadChatIds] Load ChatIDs from file path: %v", filePath)
 
 	if filePath == "" {
-		logger.Infof("Warning: chatIDsFile is empty. Using default path: default_chat_ids.json")
+		logger.Warn("ChatIDsFile is empty. Using default path: default_chat_ids.json")
 		filePath = "default_chat_ids.json"
 	}
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %v", err)
+		return nil, fmt.Errorf("[LoadChatIds] failed to open file: %v", err)
 	}
 	defer file.Close()
 
 	fileInfo, _ := file.Stat()
 	if fileInfo.Size() == 0 {
-		return nil, fmt.Errorf("file is empty")
+		return nil, fmt.Errorf("[LoadChatIds] file is empty")
 	}
 
 	chatIds := []int64{}
 	if err := json.NewDecoder(file).Decode(&chatIds); err != nil {
 		if err == io.EOF {
-			return nil, fmt.Errorf("file contains no valid JSON data")
+			return nil, fmt.Errorf("[LoadChatIds] file contains no valid JSON data")
 		}
-		return nil, fmt.Errorf("failed to decode chat IDs: %v", err)
+		return nil, fmt.Errorf("[LoadChatIds] failed to decode chat IDs: %v", err)
 	}
 
 	return chatIds, nil
@@ -141,13 +144,13 @@ func SendChallenge(token string, chatID string, messageText string) error {
 
 	data, err := json.Marshal(payload)
 	if err != nil {
-		logger.Errorf("Failed to marshal message payload: %v", err)
+		logger.Errorf("[SendChallenge] failed to marshal message payload: %v", err)
 		return err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
 	if err != nil {
-		logger.Errorf("Failed to create request for Telegram API: %v", err)
+		logger.Errorf("[SendChallenge] failed to create request for Telegram API: %v", err)
 		return err
 	}
 
@@ -156,13 +159,13 @@ func SendChallenge(token string, chatID string, messageText string) error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Errorf("Failed to send message via Telegram API: %v", err)
+		logger.Errorf("[SendChallenge] failed to send message via Telegram API: %v", err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Telegram API returned non-OK status: %v", err)
+		return fmt.Errorf("[SendChallenge] telegram API returned non-OK status: %v", err)
 	}
 
 	return nil
