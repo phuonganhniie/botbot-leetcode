@@ -113,8 +113,16 @@ func LoadChatIds(filePath string) ([]int64, error) {
 	}
 	defer file.Close()
 
+	fileInfo, _ := file.Stat()
+	if fileInfo.Size() == 0 {
+		return nil, fmt.Errorf("file is empty")
+	}
+
 	chatIds := []int64{}
 	if err := json.NewDecoder(file).Decode(&chatIds); err != nil {
+		if err == io.EOF {
+			return nil, fmt.Errorf("file contains no valid JSON data")
+		}
 		return nil, fmt.Errorf("failed to decode chat IDs: %v", err)
 	}
 
