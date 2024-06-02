@@ -22,7 +22,7 @@ jobs:
       - name: Build binary for Lambda
         run: |
           GOOS=linux GOARCH=arm64 go build -o bootstrap main.go
-          zip deployment.zip bootstrap
+          zip deployment.zip bootstrap chat_ids.json
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

@@ -29,15 +29,16 @@ func Start() {
 	}
 
 	// Retrieve and store chat IDs
-	chatIDsFile := cfg.TelegramChatIDsFilePath
-	err = telegram.GetAndStoreChatIds(cfg.TelegramBotToken, chatIDsFile)
-	if err != nil {
-		logger.Errorf("Failed to fetch Telegram list ChatIDs: %v", err)
-	}
-	logger.Info("Get and store chatIDs to file successfully")
+	// chatIDsFile := cfg.TelegramChatIDsFilePath
+	// err = telegram.GetAndStoreChatIds(cfg.TelegramBotToken, chatIDsFile)
+	// if err != nil {
+	// 	logger.Errorf("Failed to fetch Telegram list ChatIDs: %v", err)
+	// }
+	// logger.Info("Get and store chatIDs to file successfully")
 
 	// Load chat IDs from file
-	chatIds, err := telegram.LoadChatIds(chatIDsFile)
+	chatIDFilePath := cfg.TelegramChatIDsFilePath
+	chatIds, err := telegram.LoadChatIds(chatIDFilePath)
 	logger.Infof("Load chatIDs: %v", chatIds)
 	if err != nil {
 		logger.Errorf("Failed to get Telegram list ChatIDs: %v", err)
