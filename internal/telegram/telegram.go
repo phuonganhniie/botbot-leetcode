@@ -65,17 +65,17 @@ func GetAndStoreChatIds(token string, filePath string) (err error) {
 	if filePath != "" {
 		file, err := os.Open(filePath)
 		if os.IsNotExist(err) {
-			_, err := os.Create(filePath)
+			file, err := os.Create(filePath)
 			if err != nil {
 				return fmt.Errorf("[GetAndStoreChatIds] failed to create file: %v", err)
 			}
 			file.Chmod(0777)
 		}
-		if err == nil {
-			defer file.Close()
-			_ = json.NewDecoder(file).Decode(&existChatIds)
-		}
 		defer file.Close()
+
+		if err := json.NewDecoder(file).Decode(&existChatIds); err != nil {
+			return fmt.Errorf("[GetAndStoreChatIds] failed to decode file: %v", err)
+		}
 	}
 
 	// If the file path is empty, use a default name
