@@ -19,6 +19,9 @@ jobs:
         with: 
           go-version: '1.21.5'
 
+      - name: Create file stored chat ids
+        run: echo "${{secrets.CHAT_IDS_JSON}}" > chat_ids.json
+
       - name: Build binary for Lambda
         run: |
           GOOS=linux GOARCH=arm64 go build -o bootstrap main.go
